@@ -1,53 +1,59 @@
 <?php
 
-error_reporting(E_ALL);
+error_reporting(0);
+// エラーリポートを消せる
 ini_set('display_errors','On');
 
 if(!empty($_POST)){
     define('MSG01','入力必須です。');
     define('MSG02','Emailの形式で入力してください。');
     define('MSG03','パスワード（再入力）が合っていません。');
-    define('MSG04','半角英数字のみご利用ください。');
+    define('MSG04','半角英数字のみいただけます。');
     define('MSG05','6文字以上で入力してください。');
     
     $err_flg =false;
     $err_msg =array();
+    }
 
-if(empty($POST['email'])){
-    $err_msg['email'] = MSG01;
-}
-if(empty($_POST['pass'])){
-    $err_msg['pass'] = MSG01;
-}
-if(empty($_POST['pass_retype'])){
-    $err_msg['pass_retype'] = MSG01;
-}
-if(empty($err_msg)){
-    $email =$_POST['email'];
-    $pass =$_POST['pass'];
-    $pass_re =$_POST['pass_retype'];
+    if(empty($POST['email'])){
+        $err_msg['email'] = MSG01;
+    }
+    if(empty($_POST['pass'])){
+        $err_msg['pass'] = MSG01;
+    }
+    if(empty($_POST['pass_retype'])){
+        $err_msg['pass_retype'] = MSG01;
+    }
+    if(empty($err_msg)){
+        $email =$_POST['email'];
+        $pass =$_POST['pass'];
+        $pass_re =$_POST['pass_retype'];
+    }
 
 
-}
 
-if(!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/".$email)){
-    $err_msg['email'] = MSG02;
-}
-if($pass)! == $pass_re){
-    $err_msg['pass'] = MSG03;
-}
-if(empty($err_msg)){
-    if(!preg_match("/^[a-zA-Z0-9])+$/".$pass)){
+    if(!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $email)){
+        $err_msg['email'] = MSG02;
+    }
+
+    if($pass  == $pass_re){
+        $err_msg['pass'] = MSG03;
+    }
+
+    if(empty($err_msg)){
+
+    if(!preg_match("/^[a-zA-Z0-9])+$/",$pass)){
         $err_msg['pass'] =MSG04;
+        
     }else if(mb_strlen($pass) < 6){
         $err_msg['pass'] = MSG05;
     }
-if(empty($err_msg)) header("location:mypage.php");
-}
+    if(empty($err_msg)){
+        header("location:mypage.php");
+    }
 
 }
 
-1
 
 ?>
 
@@ -134,14 +140,21 @@ if(empty($err_msg)) header("location:mypage.php");
         a:hover{
             text-decoration: none;
         }
+
+        .err_msg{
+            color: #ff4d4b;
+        }
     </style>   
 </head>
 <body>
     
     <h1>ユーザー登録</h1>    
     <form action=""method="post">
+        <span class=err_msg><?php if(!empty($err_msg['email']))echo $err_msg['email'];?></span>
         <input type="text" name="email" placeholder="email">
+        <span class=err_msg><?php if(!empty($err_msg['pass']))echo $err_msg['pass'];?></span>
         <input type="text" name="pass" placeholder="パスワード">
+        <span class=err_msg><?php if(!empty($err_msg['pass_retype']))echo $err_msg['pass_retype'];?></span>
         <input type="text" name="pass_retype" placeholder="パスワード（再入力）">
         <input type="submit" value="送信">
     </form>
