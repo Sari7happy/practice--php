@@ -14,10 +14,10 @@ if(!empty($_POST)){
     // defineは定数を定義
     
 
-    $err_msg =array();
+    $err_msg = array();
     
 // フォームが入力してない時
-    if(empty($POST['email'])){
+    if(empty($_POST['email'])){
 
         $err_msg['email'] = MSG01;
     }
@@ -51,30 +51,39 @@ if(!empty($_POST)){
 
     if(empty($err_msg)){
 
-    if(!preg_match("/^[a-zA-Z0-9])+$/",$pass)){
+    if(!preg_match("/^[a-zA-Z0-9]+$/", $pass)){
         $err_msg['pass'] =MSG04;
         // passwordが6文字以内でない場合、mb_stelenで何文字か判定してくれる
     }else if(mb_strlen($pass) < 6){
 
         $err_msg['pass'] = MSG05;
     }
-    if(empty($err_msg)) header("Location:mypage.php");
+    if(empty($err_msg)) {
+
+        $dsn= 'mysql:dbname=php_sample01;host=localhost;charset=utf8';
+        $user ='root';
+        $password = 'root';
+        $options = array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE =>PDO::FETCH_ASSOC,
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+        );
+        
+        $dbh=new PDO($dsn,$user,$password,$options);
+
+        $stmt = $dbh ->prepare('INSERT INTO users (email,pass,login_time) VALUES (:email,:pass,:login_time)');
+
+        $stmt ->execute(array(':email' =>$email,':pass'=>$pass,':login_time' =>date('Y-m-d H:i:s')));
+        
+        
+        header("Location:mypage.php");
     // /移動したいところへロケーション決める
     }
 }
 }
-
+}
 
 ?>
-
-
-
-
-
-
-
-
-
 
 
 
