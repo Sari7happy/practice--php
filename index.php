@@ -6,9 +6,16 @@ ini_set('display_errors','On');
 
 if(!empty($_POST)){
 
-        $email = $_POST['email'];
-        $pass = $_POST['pass'];
+        $to = $_POST['email'];
+        $subject = $_POST['subject'];
+        $comment= $_POST['comment'];
 
+        $msg ='';
+        include('mail.php');
+}
+?>
+
+<!-- 
         $dsn=("mysql:host=localhost;dbname=php_sample01;charset=utf8");
 
         $user= 'root';
@@ -40,7 +47,7 @@ if(!empty($_POST)){
     }
 }
 
-?>
+?> -->
 
 
 
@@ -114,34 +121,38 @@ if(!empty($_POST)){
             color: white;
             float: right;
         }
+
+        textarea{
+            color:#545454;
+            height: 200px;
+            width: 100%;
+            padding: 5px 10px;
+            font-size:16px;
+            display: block;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border-color: #ddd;
+        }
+
+
         input[type="submit"]:hover{
             background: #111;
             cursor: pointer;
         }
 
-        a{
-            color: #545454;
-            display: block;
-        }
-
-        a:hover{
-            text-decoration: none;
-        }
-
-        .err_msg{
-            color: #ff4d4b;
-        }
     </style>   
 </head>
 <body>
-    
-    <h1>ログイン</h1>    
+    <p><?php if(!empty($msg)) echo $msg;?></p>
+    <h1>お問合せ</h1>    
     <form method="post">
         <!-- ""自分自身に「送信」 -->
         
         <input type="text" name="email" placeholder="email" value="<?php if(!empty($_POST['email'])) echo $_POST['email'];?>">
     
-        <input type="password" name="pass" placeholder="パスワード" value="<?php if(!empty($_POST['pass'])) echo $_POST['pass'];?>">
+        <input type="text" name="subject" placeholder="件名" value="<?php if(!empty($_POST['subject'])) echo $_POST['subject'];?>">
+<!-- phpの中に値を保持するプログラムを書く -->
+        <textarea name="comment" placeholder="内容"><?php if(!empty($_POST['comment'])) echo $_POST['comment'];?></textarea>
         
         <input type="submit" value="送信">
     </form>
