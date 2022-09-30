@@ -5,82 +5,39 @@ error_reporting(E_ALL);
 ini_set('display_errors','On');
 
 if(!empty($_POST)){
-    define('MSG01','入力必須です。');
-    define('MSG02','Emailの形式で入力してください。');
-    define('MSG03','パスワード（再入力）が合っていません。');
-    define('MSG04','半角英数字のみいただけます。');
-    define('MSG05','6文字以上で入力してください。');
 
-    // defineは定数を定義
-    
-
-    $err_msg = array();
-    
-// フォームが入力してない時
-    if(empty($_POST['email'])){
-
-        $err_msg['email'] = MSG01;
-    }
-
-    if(empty($_POST['pass'])){
-
-        $err_msg['pass'] = MSG01;
-    }
-
-    if(empty($_POST['pass_retype'])){
-
-        $err_msg['pass_retype'] = MSG01;
-    }
-
-    if(empty($err_msg)){
-// 変数にユーザー情報を代入
         $email = $_POST['email'];
         $pass = $_POST['pass'];
-        $pass_re = $_POST['pass_retype'];
-    
 
+        $dsn=("mysql:host=localhost;dbname=php_sample01;charset=utf8");
 
-// emailの形式でない場合
-    if(!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $email)){
-        $err_msg['email'] = MSG02;
-    }
-// パスワードと再入力があってない場合.!==ははさない
-    if($pass !== $pass_re){
-        $err_msg['pass'] = MSG03;
-    }
+        $user= 'root';
+        $password = 'root1';
 
-    if(empty($err_msg)){
-
-    if(!preg_match("/^[a-zA-Z0-9]+$/", $pass)){
-        $err_msg['pass'] =MSG04;
-        // passwordが6文字以内でない場合、mb_stelenで何文字か判定してくれる
-    }else if(mb_strlen($pass) < 6){
-
-        $err_msg['pass'] = MSG05;
-    }
-    if(empty($err_msg)) {
-
-        $dsn= 'mysql:dbname=php_sample01;host=localhost;charset=utf8';
-        $user ='root';
-        $password = 'root';
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE =>PDO::FETCH_ASSOC,
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
         );
-        
-        $dbh=new PDO($dsn,$user,$password,$options);
+    
 
-        $stmt = $dbh ->prepare('INSERT INTO users (email,pass,login_time) VALUES (:email,:pass,:login_time)');
+        $dbh= new PDO($dsn,$user,$password,$options);
 
-        $stmt ->execute(array(':email' =>$email,':pass'=>$pass,':login_time' =>date('Y-m-d H:i:s')));
+        $stmt = $dbh ->prepare('SELECT*FROM users WHERE email =:email AND pass =:pass');
+
+        $stmt ->execute(array(':email' => $email,':pass'=> $pass));
         
+        $result =0;
+
+        $result =$stmt ->fetch(PDO::FETCH_ASSOC);
+
+        if(!empty($result)){
+            session_start();
+            $_SESSION['login'] = true;
         
         header("Location:mypage.php");
     // /移動したいところへロケーション決める
     }
-}
-}
 }
 
 ?>
@@ -178,19 +135,16 @@ if(!empty($_POST)){
 </head>
 <body>
     
-    <h1>ユーザー登録</h1>    
-    <form action=""method="post">
+    <h1>ログイン</h1>    
+    <form method="post">
         <!-- ""自分自身に「送信」 -->
-        <span class="err_msg"><?php if(!empty($err_msg['email']))echo $err_msg['email'];?></span>
+        
         <input type="text" name="email" placeholder="email" value="<?php if(!empty($_POST['email'])) echo $_POST['email'];?>">
-        <!-- 上の内容入力したい文字を保持する方法 valueの後から入力-->
-        <span class="err_msg"><?php if(!empty($err_msg['pass']))echo $err_msg['pass'];?></span>
-        <!-- type属性を変えるとパスワードの文字が見えない設定になる -->
+    
         <input type="password" name="pass" placeholder="パスワード" value="<?php if(!empty($_POST['pass'])) echo $_POST['pass'];?>">
-        <span class="err_msg"><?php if(!empty($err_msg['pass_retype']))echo $err_msg['pass_retype'];?></span>
-        <input type="password" name="pass_retype" placeholder="パスワード（再入力）"value="<?php if(!empty($_POST['pass_retype'])) echo $_POST['pass_retype'];?>">
+        
         <input type="submit" value="送信">
     </form>
-        <a href="mypage.php">マイページへ</a>
+
 </body>
 </html>
