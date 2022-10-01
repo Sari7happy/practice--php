@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 // エラーリポートを消せる
 ini_set('display_errors','On');
-
+// ifでファイルが送信されているかどうか判定している
 if(!empty($_FILES)){
 
         $file= $_FILES['image'];
@@ -56,8 +56,10 @@ if(!empty($_FILES)){
 <body>
     <p><?php if(!empty($msg)) echo $msg;?></p>
     <h1>写真アップロード</h1>    
+    <!-- enctype属性はmultipart/form-dataは決まり文句 フォームから送信したらこのコードを使う-->
     <form method="post" enctype="multipart/form-data">
         <!-- ""自分自身に「送信」 -->
+        <!-- ファイルを送信するところはimageに送信 -->
         <input type="file" name ="image">
         <input type="submit" value="アップロード">
         
